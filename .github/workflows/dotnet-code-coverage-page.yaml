@@ -3,6 +3,9 @@
 # Usage:
 # - set initial data in csproj:
 # -- set Version
+# - github pages 
+#  - enable
+#  - set source to GitHub Actions
 # 
 # name: <name of the workflow>
 # on:
@@ -33,6 +36,7 @@ on:
         type: string
 permissions:
   contents: read
+  id-token: write
   pages: write
 jobs:
   extract-version:
@@ -51,7 +55,7 @@ jobs:
       REPORT_TITLE: ${{inputs.project-name}} ${{needs.extract-version.outputs.version}} Code Coverage
     steps:
     - name: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: add altcover
       run: dotnet add ${{env.TEST_CSPROJ}} package altcover
     - name: build
@@ -61,9 +65,9 @@ jobs:
       run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="../../${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
       working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.x
+        dotnet-version: 7.x
         dotnet-quality: 'ga'
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@5.1.26
@@ -74,11 +78,11 @@ jobs:
         assemblyfilters: ${{ env.ASSEMBLY_FILTERS }}
         title: ${{env.REPORT_TITLE}}
     - name: Setup Pages
-      uses: actions/configure-pages@v3
+      uses: actions/configure-pages@v4
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
       with:
         path: ${{ env.REPORT_TARGET }}
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v2
+      uses: actions/deploy-pages@v4
