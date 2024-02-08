@@ -33,7 +33,12 @@ permissions:
   contents: write
   packages: write
 jobs:
+  extract-version:
+    uses: MichaelDiers/github-workflows/.github/workflows/dotnet-project-version.yaml@main
+    with:
+      project-path: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
   create-nuget:
+    needs: extract-version
     runs-on: ubuntu-latest
     env:
       CSPROJ: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
@@ -41,18 +46,12 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: extract current nuget version
-      run: echo "CURRENT_VERSION=$(cat ${{env.CSPROJ}} | grep -Po '<Version>.+?</Version>')" >> $GITHUB_ENV
-    - name: extract major, minor, patch from nuget version
-      run: |
-        echo "PATCH_VERSION=$(echo ${CURRENT_VERSION} | grep -Po '<Version>[0-9]+\.[0-9]+\.\K.*?(?=</Version>)' | awk '{print $0+1}')" >> $GITHUB_ENV
-        echo "MAJOR_MINOR_VERSION=$(echo ${CURRENT_VERSION} | grep -Po '<Version>\K.*?(?=[0-9]+</Version>)')" >> $GITHUB_ENV
     - name: new nuget version
       run: |
-        echo "NEW_VERSION=<Version>${MAJOR_MINOR_VERSION}${PATCH_VERSION}</Version>" >> $GITHUB_ENV
-        echo "VERSION=${MAJOR_MINOR_VERSION}${PATCH_VERSION}" >> $GITHUB_ENV
+        echo "NEW_VERSION_XML=<Version>${needs.extract-version.outputs.major}.${needs.extract-version.outputs.minor}.((${needs.extract-version.outputs.patch}+1))</Version>" >> $GITHUB_ENV
+        echo "NEW_VERSION=${needs.extract-version.outputs.major}.${needs.extract-version.outputs.minor}.((${needs.extract-version.outputs.patch}+1))" >> $GITHUB_ENV
     - name: patch nuget version
-      run: sed -i "s|${CURRENT_VERSION}|${NEW_VERSION}|g" ${{env.CSPROJ}}
+      run: sed -i "s|${needs.extract-version.outputs.version-xml}|${NEW_VERSION_XML}|g" ${{env.CSPROJ}}
     - name: build
       run: dotnet build --configuration Release 
       working-directory: ${{inputs.solution-directory}}
@@ -63,12 +62,12 @@ jobs:
       run: dotnet pack --configuration Release --no-build --output .
       working-directory: ${{inputs.solution-directory}}
     - name: push nuget
-      run: dotnet nuget push ${{inputs.project-name}}.${VERSION}.nupkg --source ${{env.PUSH_SOURCE}} --api-key ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push ${{inputs.project-name}}.${NEW_VERSION}.nupkg --source ${{env.PUSH_SOURCE}} --api-key ${{ secrets.GITHUB_TOKEN }}
       working-directory: ${{inputs.solution-directory}}
     - name: commit version patch
       run: |
         git config --global user.name '${{ github.actor }}'
         git config --global user.email '${{ github.actor }}@users.noreply.github.com'
         git add ${{env.CSPROJ}}
-        git commit -m "version update to ${VERSION}"
+        git commit -m "version update to ${NEW_VERSION}"
         git push
