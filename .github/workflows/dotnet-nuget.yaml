@@ -43,15 +43,13 @@ jobs:
     env:
       CSPROJ: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
       PUSH_SOURCE: https://nuget.pkg.github.com/${{ github.actor }}/index.json
+      NEW_VERSION: ${{needs.extract-version.outputs.major}}.${{needs.extract-version.outputs.minor}}.${{needs.extract-version.outputs.patch}}
+      NEW_VERSION_XML: <Version>${{needs.extract-version.outputs.major}}.${{needs.extract-version.outputs.minor}}.${{needs.extract-version.outputs.patch}}</Version>
     steps:
     - name: checkout
       uses: actions/checkout@v4
-    - name: new nuget version
-      run: |
-        echo "NEW_VERSION_XML=<Version>${needs.extract-version.outputs.major}.${needs.extract-version.outputs.minor}.${needs.extract-version.outputs.patch}</Version>" >> $GITHUB_ENV
-        echo "NEW_VERSION=${needs.extract-version.outputs.major}.${needs.extract-version.outputs.minor}.${needs.extract-version.outputs.patch}" >> $GITHUB_ENV
     - name: patch nuget version
-      run: sed -i "s|${needs.extract-version.outputs.version-xml}|${NEW_VERSION_XML}|g" ${{env.CSPROJ}}
+      run: sed -i "s|${{needs.extract-version.outputs.version-xml}}|${{env.NEW_VERSION_XML}}|g" ${{env.CSPROJ}}
     - name: build
       run: dotnet build --configuration Release 
       working-directory: ${{inputs.solution-directory}}
