@@ -28,7 +28,6 @@ on:
         required: true
         type: string
       test-project-extension:
-
 permissions:
   contents: read
 jobs:
