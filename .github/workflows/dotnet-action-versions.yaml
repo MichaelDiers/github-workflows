@@ -1,0 +1,19 @@
+# Usage:
+# 
+# name: <name of the workflow>
+# on:
+#   push:
+#     paths:
+#       - <path>
+#   workflow_dispatch:
+# jobs:
+#   action-versions:
+#     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-action-versions.yaml@main
+#
+name: dotnet-action-versions
+on:
+  workflow_call:
+    outputs:
+      checkout:
+        description: "The version of actions/checkout"
+        value: v4
