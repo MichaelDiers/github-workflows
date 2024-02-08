@@ -57,7 +57,7 @@ jobs:
       CSPROJ: ${{inputs.project-path}}
     steps:
     - name: checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     - name: extract current version as xml
       run: echo "VERSION_XML=$(cat ${{env.CSPROJ}} | grep -Poi '<Version>.+?</Version>')" >> $GITHUB_ENV
     - name: extract version, major, minor, patch versions
