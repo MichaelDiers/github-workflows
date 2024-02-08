@@ -42,9 +42,12 @@ jobs:
     needs: extract-version
     runs-on: ubuntu-latest
     env:
-      ALTCOVER_XML: ../../doc/coverage/${{inputs.test-project-name}}-altcover.xml
+      ALTCOVER_XML: doc/coverage/${{inputs.test-project-name}}-altcover.xml
       SOLUTION_DIRECTORY: ${{inputs.solution-directory}}
       TEST_CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
+      REPORT_TARGET: doc/coverage
+      ASSEMBLY_FILTERS: -*.Tests;-AltCover.Monitor
+      REPORT_TITLE: ${{inputs.project-name}} ${{needs.extract-version.outputs.version}} Code Coverage
     steps:
     - name: checkout
       uses: actions/checkout@v3
@@ -54,5 +57,18 @@ jobs:
       run: dotnet build --configuration Release 
       working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: test
-      run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
+      run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="../../${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
       working-directory: ${{env.SOLUTION_DIRECTORY}}
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.x
+        dotnet-quality: 'ga'
+    - name: ReportGenerator
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.26
+      with:
+        reports: ${{ env.ALTCOVER_XML }}
+        targetdir: ${{ env.REPORT_TARGET }}
+        reporttypes: Html_Dark
+        assemblyfilters: ${{ env.ASSEMBLY_FILTERS }}
+        title: ${{env.REPORT_TITLE}}
