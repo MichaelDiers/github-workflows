@@ -33,14 +33,17 @@ permissions:
   contents: write
   packages: write
 jobs:
+  action-versions:
+    uses: MichaelDiers/github-workflows/.github/workflows/dotnet-action-versions.yaml@main
   create-nuget:
+    needs: actions-versions
     runs-on: ubuntu-latest
     env:
       CSPROJ: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
       PUSH_SOURCE: https://nuget.pkg.github.com/${{ github.actor }}/index.json
     steps:
     - name: checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@${{needs.action-versions.outputs.checkout}}
     - name: extract current nuget version
       run: echo "CURRENT_VERSION=$(cat ${{env.CSPROJ}} | grep -Po '<Version>.+?</Version>')" >> $GITHUB_ENV
     - name: extract major, minor, patch from nuget version
