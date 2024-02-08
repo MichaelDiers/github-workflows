@@ -1,0 +1,19 @@
+name: build and test dotnet solution
+on:
+  workflow_call:
+    inputs:
+      solution-directory:
+        required: true
+        type: string
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: build
+      run: dotnet build --configuration Release 
+      working-directory: ${{env.solution-directory}}
+    - name: test
+      run: dotnet test --configuration Release --no-build
+      working-directory: ${{env.solution-directory}}
