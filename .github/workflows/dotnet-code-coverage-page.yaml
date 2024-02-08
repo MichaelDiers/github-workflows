@@ -38,6 +38,9 @@ on:
       solution-directory:
         required: true
         type: string
+      assembly-filters:
+        default: -*.Tests;-AltCover.Monitor;-*.Test
+        type: string
 permissions:
   contents: read
   id-token: write
@@ -55,7 +58,7 @@ jobs:
       SOLUTION_DIRECTORY: ${{inputs.solution-directory}}
       TEST_CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
       REPORT_TARGET: doc/coverage
-      ASSEMBLY_FILTERS: -*.Tests;-AltCover.Monitor
+      ASSEMBLY_FILTERS: ${{inputs.assembly-filters}}
       REPORT_TITLE: ${{inputs.project-name}} ${{needs.extract-version.outputs.version}} Code Coverage
     steps:
     - name: checkout
