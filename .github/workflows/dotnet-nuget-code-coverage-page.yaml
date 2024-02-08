@@ -1,0 +1,31 @@
+name: create nuget
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        required: true
+        type: string
+      solution-directory:
+        required: true
+        type: string
+      test-project-name:
+        required: true
+        type: string
+permissions:
+  contents: write
+  id-token: write
+  packages: write
+  pages: write
+jobs:
+  create-nuget:
+    uses: MichaelDiers/github-workflows/.github/workflows/dotnet-nuget.yaml@main
+    with:
+      project-name: ${{inputs.project-name}}
+      solution-directory: ${{inputs.solution-directory}}
+  create-code-coverage-page:
+    needs: create-nuget
+    uses: MichaelDiers/github-workflows/.github/workflows/dotnet-code-coverage-page.yaml@main
+    with:
+      project-name: ${{inputs.project-name}}
+      test-project-name: ${{inputs.test-project-name}}
+      solution-directory: ${{inputs.solution-directory}}
