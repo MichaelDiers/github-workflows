@@ -1,0 +1,51 @@
+# Usage:
+# 
+# name: <name of the workflow>
+# on:
+#   push:
+#     paths:
+#       - <path>
+#   workflow_dispatch:
+# jobs:
+#   build-and-test:
+#     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-nuget.yaml@main
+#     with:
+#       project-name: <name of the project without .csproj>
+#       solution-directory: <path to the folder that contains the solution file>
+#
+name: create nuget
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        required: true
+        type: string
+      solution-directory:
+        required: true
+        type: string
+jobs:
+  create-nuget:
+    runs-on: ubuntu-latest
+    env:
+      CSPROJ: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: extract current nuget version
+      run: echo "CURRENT_VERSION=$(cat ${{env.CSPROJ}} | grep -Po '<Version>.+?</Version>')" >> $GITHUB_ENV
+    - name: extract major, minor, patch from nuget version
+      run: |
+        echo "PATCH_VERSION=$(echo ${CURRENT_VERSION} | grep -Po '<Version>[0-9]+\.[0-9]+\.\K.*?(?=</Version>)' | awk '{print $0+1}')" >> $GITHUB_ENV
+        echo "MAJOR_MINOR_VERSION=$(echo ${CURRENT_VERSION} | grep -Po '<Version>\K.*?(?=[0-9]+</Version>)')" >> $GITHUB_ENV
+    - name: new nuget version
+      run: |
+        echo "NEW_VERSION=<Version>${MAJOR_MINOR_VERSION}${PATCH_VERSION}</Version>" >> $GITHUB_ENV
+        echo "VERSION=${MAJOR_MINOR_VERSION}${PATCH_VERSION}" >> $GITHUB_ENV
+    - name: patch nuget version
+      run: sed -i "s|${CURRENT_VERSION}|${NEW_VERSION}|g" ${{env.CSPROJ}}
+    - name: build
+      run: dotnet build --configuration Release 
+      working-directory: ${{inputs.solution-directory}}
+    - name: test
+      run: dotnet test --configuration Release --no-build
+      working-directory: ${{inputs.solution-directory}}
