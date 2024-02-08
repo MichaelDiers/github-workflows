@@ -1,3 +1,17 @@
+# Usage:
+# 
+# name: <name of the workflow>
+# on:
+#   push:
+#     paths:
+#       - <path>
+#   workflow_dispatch:
+# jobs:
+#   build-and-test:
+#     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-build-and-test.yaml@main
+#     with:
+#       solution-directory: <path to the folder that contains the solution file>
+#
 name: build and test dotnet solution
 on:
   workflow_call:
