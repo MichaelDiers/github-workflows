@@ -1,4 +1,8 @@
+# Info:
+# - increases path verison by 1
+# - build and test solution
 # Usage:
+# - set initial version of the nuget in csproj file.
 # 
 # name: <name of the workflow>
 # on:
@@ -48,4 +52,7 @@ jobs:
       working-directory: ${{inputs.solution-directory}}
     - name: test
       run: dotnet test --configuration Release --no-build
+      working-directory: ${{inputs.solution-directory}}
+    - name: Pack
+      run: dotnet pack --configuration Release --no-build --output .
       working-directory: ${{inputs.solution-directory}}
