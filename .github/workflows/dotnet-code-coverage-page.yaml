@@ -14,6 +14,7 @@
 #   create-code-coverage-page:
 #     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-code-coverage-page.yaml@main
 #     with:
+#       project-name: <name of the project without .csproj>
 #       test-project-name: <name of the test project without .csproj>
 #       solution-directory: <path to the folder that contains the solution file>
 #
@@ -21,6 +22,9 @@ name: add code coverage results to github pages
 on:
   workflow_call:
     inputs:
+      project-name:
+        required: true
+        type: string
       test-project-name:
         required: true
         type: string
@@ -33,7 +37,7 @@ jobs:
   extract-version:
     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-project-version.yaml@main
     with:
-      project-path: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
+      project-path: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
   coverage:
     needs: extract-version
     runs-on: ubuntu-latest
