@@ -34,7 +34,6 @@ permissions:
   packages: write
 jobs:
   create-nuget:
-    needs: actions-versions
     runs-on: ubuntu-latest
     env:
       CSPROJ: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
