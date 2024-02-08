@@ -33,6 +33,7 @@ on:
         type: string
 permissions:
   contents: read
+  pages: write
 jobs:
   extract-version:
     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-project-version.yaml@main
@@ -72,3 +73,12 @@ jobs:
         reporttypes: Html_Dark
         assemblyfilters: ${{ env.ASSEMBLY_FILTERS }}
         title: ${{env.REPORT_TITLE}}
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: ${{ env.REPORT_TARGET }}
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v2
