@@ -48,8 +48,8 @@ jobs:
       uses: actions/checkout@v4
     - name: new nuget version
       run: |
-        echo "NEW_VERSION_XML=<Version>${needs.extract-version.outputs.major}.${needs.extract-version.outputs.minor}.((${needs.extract-version.outputs.patch}+1))</Version>" >> $GITHUB_ENV
-        echo "NEW_VERSION=${needs.extract-version.outputs.major}.${needs.extract-version.outputs.minor}.((${needs.extract-version.outputs.patch}+1))" >> $GITHUB_ENV
+        echo "NEW_VERSION_XML=<Version>${needs.extract-version.outputs.major}.${needs.extract-version.outputs.minor}.${needs.extract-version.outputs.patch}</Version>" >> $GITHUB_ENV
+        echo "NEW_VERSION=${needs.extract-version.outputs.major}.${needs.extract-version.outputs.minor}.${needs.extract-version.outputs.patch}" >> $GITHUB_ENV
     - name: patch nuget version
       run: sed -i "s|${needs.extract-version.outputs.version-xml}|${NEW_VERSION_XML}|g" ${{env.CSPROJ}}
     - name: build
