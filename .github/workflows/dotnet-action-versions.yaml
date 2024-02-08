@@ -16,4 +16,13 @@ on:
     outputs:
       checkout:
         description: "The version of actions/checkout"
-        value: v4
+        value:  ${{ jobs.version-job.outputs.checkout }}
+jobs:
+  version-job:
+    runs-on: ubuntu-latest
+    outputs:
+      checkout: ${{ steps.versions.outputs.CHECKOUT }}
+    steps:
+    - id: versions
+      run: |
+        echo "CHECKOUT=$(echo v4)" >> $GITHUB_OUTPUT
