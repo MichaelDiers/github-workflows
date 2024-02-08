@@ -39,7 +39,7 @@ on:
         required: true
         type: string
       assembly-filters:
-        default: -*.Tests;-AltCover.Monitor;-*.Test;Microsoft.*
+        default: -*.Tests;-AltCover.Monitor;-*.Test;-Microsoft.*
         type: string
 permissions:
   contents: read
