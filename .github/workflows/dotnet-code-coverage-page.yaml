@@ -27,24 +27,30 @@ on:
       solution-directory:
         required: true
         type: string
+      test-project-extension:
+
 permissions:
   contents: read
 jobs:
-  create-nuget:
+  extract-version:
+    uses: MichaelDiers/github-workflows/.github/workflows/dotnet-project-version.yaml@main
+    with:
+      project-path: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
+  coverage:
+    needs: extract-version
     runs-on: ubuntu-latest
     env:
       ALTCOVER_XML: ../../doc/coverage/${{inputs.test-project-name}}-altcover.xml
-      CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
+      SOLUTION_DIRECTORY: ${{inputs.solution-directory}}
+      TEST_CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
     steps:
     - name: checkout
       uses: actions/checkout@v3
-    - name: extract current nuget version
-      run: echo "CURRENT_VERSION=$(cat ${{env.CSPROJ}} | grep -Po '<Version>.+?</Version>')" >> $GITHUB_ENV
     - name: add altcover
-      run: dotnet add ${{env.test-project-name}} package altcover
+      run: dotnet add ${{env.TEST_CSPROJ}} package altcover
     - name: build
       run: dotnet build --configuration Release 
-      working-directory: ${{inputs.solution-directory}}
+      working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: test
       run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
-      working-directory: ${{inputs.solution-directory}}
+      working-directory: ${{env.SOLUTION_DIRECTORY}}
