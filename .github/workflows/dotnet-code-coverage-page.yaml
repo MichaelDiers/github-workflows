@@ -1,0 +1,50 @@
+# Info:
+# - uses altcover for code coverage
+# Usage:
+# - set initial data in csproj:
+# -- set Version
+# 
+# name: <name of the workflow>
+# on:
+#   push:
+#     paths:
+#       - <path>
+#   workflow_dispatch:
+# jobs:
+#   create-code-coverage-page:
+#     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-code-coverage-page.yaml@main
+#     with:
+#       test-project-name: <name of the test project without .csproj>
+#       solution-directory: <path to the folder that contains the solution file>
+#
+name: add code coverage results to github pages
+on:
+  workflow_call:
+    inputs:
+      test-project-name:
+        required: true
+        type: string
+      solution-directory:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  create-nuget:
+    runs-on: ubuntu-latest
+    env:
+      ALTCOVER_XML: ../../doc/coverage/${{inputs.test-project-name}}-altcover.xml
+      CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: extract current nuget version
+      run: echo "CURRENT_VERSION=$(cat ${{env.CSPROJ}} | grep -Po '<Version>.+?</Version>')" >> $GITHUB_ENV
+    - name: add altcover
+      run: dotnet add ${{env.test-project-name}} package altcover
+    - name: build
+      run: dotnet build --configuration Release 
+      working-directory: ${{inputs.solution-directory}}
+    - name: test
+      run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
+      working-directory: ${{inputs.solution-directory}}

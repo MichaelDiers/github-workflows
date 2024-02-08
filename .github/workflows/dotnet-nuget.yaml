@@ -1,5 +1,5 @@
 # Info:
-# - increases path verison by 1
+# - increases path version by 1
 # - build and test solution
 # Usage:
 # - set initial data in csproj:
@@ -13,7 +13,7 @@
 #       - <path>
 #   workflow_dispatch:
 # jobs:
-#   build-and-test:
+#   create-nuget:
 #     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-nuget.yaml@main
 #     with:
 #       project-name: <name of the project without .csproj>
