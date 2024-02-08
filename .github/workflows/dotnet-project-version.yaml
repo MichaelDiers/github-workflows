@@ -1,0 +1,70 @@
+# Info:
+# - extract version from project file specified as <VERSION>...</VERSION>
+# - outputs
+#   - version as xml
+#   - version without xml tags
+#   - major
+#   - minor
+#   - patch
+#
+# Usage:
+# 
+# name: <name of the workflow>
+# on:
+#   push:
+#     paths:
+#       - <path>
+#   workflow_dispatch:
+# jobs:
+#   extract-version:
+#     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-project-version.yaml@main
+#     with:
+#       project-path: <path to project including .csproj>
+#
+name: dotnet-project-version
+on:
+  workflow_call:
+    inputs:
+      project-path:
+        required: true
+        type: string
+    outputs:
+      version:
+        description: "The full version as major.minor.patch"
+        value: ${{ jobs.version-job.outputs.version }}
+      version-xml:
+        description: "The full version as <VERSION>major.minor.patch</VERSION>"
+        value: ${{ jobs.version-job.outputs.version-xml }}
+      major:
+        description: "The major version"
+        value: ${{ jobs.version-job.outputs.major }}
+      minor:
+        description: "The minor version"
+        value: ${{ jobs.version-job.outputs.minor }}
+      patch:
+        description: "The patch version"
+        value: ${{ jobs.version-job.outputs.patch }}
+jobs:
+  version-job:
+    runs-on: ubuntu-latest
+    outputs:
+      version-xml: ${{ steps.versions.outputs.VERSION_XML }}
+      version: ${{ steps.versions.outputs.VERSION }}
+      major: ${{ steps.versions.outputs.MAJOR }}
+      minor: ${{ steps.versions.outputs.MINOR }}
+      patch: ${{ steps.versions.outputs.PATCH }}
+    env:
+      CSPROJ: ${{inputs.project-path}}
+    steps:
+    - name: checkout
+      uses: actions/checkout@v3
+    - name: extract current version as xml
+      run: echo "VERSION_XML=$(cat ${{env.CSPROJ}} | grep -Poi '<Version>.+?</Version>')" >> $GITHUB_ENV
+    - name: extract version, major, minor, patch versions
+      id: versions
+      run: |
+        echo "VERSION_XML=$(echo ${VERSION_XML})" >> $GITHUB_OUTPUT
+        echo "VERSION=$(echo ${VERSION_XML} | grep -Poi '<VERSION>\K.*?(?=</VERSION>)')" >> $GITHUB_OUTPUT
+        echo "MAJOR=$(echo ${VERSION_XML} | grep -Poi '<VERSION>\K.*?(?=.[0-9]+.[0-9]+</VERSION>)')" >> $GITHUB_OUTPUT
+        echo "MINOR=$(echo ${VERSION_XML} | grep -Poi '<VERSION>[0-9]+.\K.*?(?=.[0-9]+</VERSION>)')" >> $GITHUB_OUTPUT
+        echo "PATCH=$(echo ${VERSION_XML} | grep -Poi '<VERSION>[0-9]+.[0-9]+.\K.*?(?=</VERSION>)')" >> $GITHUB_OUTPUT
