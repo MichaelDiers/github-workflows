@@ -23,6 +23,7 @@
 #     with:
 #       project-name: <name of the project without .csproj>
 #       test-project-name: <name of the test project without .csproj>
+#       project-version: <major.minor.patch version of the project>
 #       solution-directory: <the path directory that contains the solution file>
 #
 name: add code coverage results to github pages
@@ -38,6 +39,9 @@ on:
       solution-directory:
         required: true
         type: string
+      project-version:
+        required: true
+        type: string
       assembly-filters:
         default: -*.Tests;-AltCover.Monitor;-*.Test;-Microsoft.*;-testhost
         type: string
@@ -46,10 +50,6 @@ permissions:
   id-token: write
   pages: write
 jobs:
-  extract-version:
-    uses: MichaelDiers/github-workflows/.github/workflows/dotnet-project-version.yaml@main
-    with:
-      project-path: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
   coverage:
     needs: extract-version
     runs-on: ubuntu-latest
@@ -59,7 +59,7 @@ jobs:
       TEST_CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
       REPORT_TARGET: doc/coverage
       ASSEMBLY_FILTERS: ${{inputs.assembly-filters}}
-      REPORT_TITLE: ${{inputs.project-name}} ${{needs.extract-version.outputs.version}} Code Coverage
+      REPORT_TITLE: ${{inputs.project-name}} ${{inputs.project-version}} Code Coverage
     steps:
     - name: checkout
       uses: actions/checkout@v4

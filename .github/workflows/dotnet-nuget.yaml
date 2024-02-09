@@ -29,6 +29,10 @@ on:
       solution-directory:
         required: true
         type: string
+    outputs:
+      new-version:
+        description: "The new nuget version as major.minor.patch"
+        value: ${{ jobs.create-nuget.outputs.new-version }}
 permissions:
   contents: write
   packages: write
@@ -40,6 +44,8 @@ jobs:
   create-nuget:
     needs: extract-version
     runs-on: ubuntu-latest
+    outputs:
+      new-version: ${{ steps.output-step.outputs.NEW_VERSION }}
     env:
       CSPROJ: ${{inputs.solution-directory}}/${{inputs.project-name}}/${{inputs.project-name}}.csproj
       PUSH_SOURCE: https://nuget.pkg.github.com/${{ github.actor }}/index.json
@@ -73,3 +79,7 @@ jobs:
         git add ${{env.CSPROJ}}
         git commit -m "version update to ${NEW_VERSION}"
         git push
+    - name: set outputs
+      id: output-step
+      run: |
+        echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_OUTPUT

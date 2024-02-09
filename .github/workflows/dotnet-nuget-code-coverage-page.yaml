@@ -28,4 +28,5 @@ jobs:
     with:
       project-name: ${{inputs.project-name}}
       test-project-name: ${{inputs.test-project-name}}
+      project-version: ${{needs.create-nuget.outputs.new-version}}
       solution-directory: ${{inputs.solution-directory}}
