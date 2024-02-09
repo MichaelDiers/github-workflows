@@ -61,7 +61,7 @@ jobs:
     - name: patch nuget version
       run: sed -i "s|${{needs.extract-version.outputs.version-xml}}|${NEW_VERSION_XML}|g" ${{env.CSPROJ}}
     - name: build
-      run: dotnet build --configuration Release -property:authors=${{ github.actor }} -property:repository=${{github.server_url}}/${{github.repository}}
+      run: dotnet build --configuration Release
       working-directory: ${{inputs.solution-directory}}
     - name: test
       run: dotnet test --configuration Release --no-build
