@@ -26,6 +26,12 @@ name: build react app and deploy to github pages
 on:
   workflow_call:
     inputs:
+      add-build-info:
+        default: false
+        type: boolean
+      build-info-file-name:
+        default: build.html
+        type: string
       build-directory:
         default: build
         type: string
@@ -39,6 +45,8 @@ permissions:
 jobs:
   build-and-deploy:
     env:
+      Add_BUILD_INFO: ${{inputs.add-build-info}}
+      BUILD_INFO_FILE: ${{inputs.working-directory}}/${{inputs.build-directory}}/static/${{inputs.build-info-file-name}}
       PAGES_DIRECTORY: ${{inputs.working-directory}}/${{inputs.build-directory}}
       WORKING_DIRECTORY: ${{inputs.working-directory}}
     runs-on: ubuntu-latest
@@ -51,6 +59,9 @@ jobs:
     - name: build
       run: npm run build
       working-directory: ${{env.WORKING_DIRECTORY}}
+    - name: add build info
+      if: ${{env.Add_BUILD_INFO}}
+      run: echo "${{github.run_number}}" > ${{env.BUILD_INFO_FILE}}
     - name: setup github pages
       uses: actions/configure-pages@v4
     - name: upload artifact
