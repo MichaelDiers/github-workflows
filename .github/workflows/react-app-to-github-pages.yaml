@@ -19,8 +19,10 @@
 #   react-app-to-github-pages:
 #     uses: MichaelDiers/github-workflows/.github/workflows/react-app-to-github-pages.yaml@main
 #     with:
-#       build-directory: <path to build output directory relative to the working-directory>
-#       working-directory: <path to folder that contains the react app>
+#       add-build-info: <if true add a simple build info to the static files, otherwise the step is skipped> (default: false)
+#       build-info-file-name: <name of the build info file> (default: build.html)
+#       build-directory: <path to build output directory relative to the working-directory> (default: build)
+#       working-directory: <path to folder that contains the react app> (required)
 #
 name: build react app and deploy to github pages
 on:
@@ -60,7 +62,7 @@ jobs:
       run: npm run build
       working-directory: ${{env.WORKING_DIRECTORY}}
     - name: add build info
-      if: ${{env.Add_BUILD_INFO}}
+      if: ${{env.Add_BUILD_INFO}} == true
       run: echo "${{github.run_number}}" > ${{env.BUILD_INFO_FILE}}
     - name: setup github pages
       uses: actions/configure-pages@v4
