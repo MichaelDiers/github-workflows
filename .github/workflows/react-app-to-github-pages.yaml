@@ -62,7 +62,7 @@ jobs:
       run: npm run build
       working-directory: ${{env.WORKING_DIRECTORY}}
     - name: add build info
-      if: env.Add_BUILD_INFO
+      if: ${{ env.Add_BUILD_INFO == true || env.Add_BUILD_INFO == 'true'}}
       run: echo "${{github.run_number}}" > ${{env.BUILD_INFO_FILE}}
     - name: setup github pages
       uses: actions/configure-pages@v4
