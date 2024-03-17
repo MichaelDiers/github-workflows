@@ -63,7 +63,7 @@ jobs:
       working-directory: ${{env.WORKING_DIRECTORY}}
     - name: add build info
       if: ${{ env.Add_BUILD_INFO == true || env.Add_BUILD_INFO == 'true'}}
-      run: echo "build ${{github.run_number}}<br>date +'%Y-%m-%dT%H:%M:%S'" > ${{env.BUILD_INFO_FILE}}
+      run: echo "build ${{github.run_number}}<br>${{date +'%Y-%m-%dT%H:%M:%S'}}" > ${{env.BUILD_INFO_FILE}}
     - name: setup github pages
       uses: actions/configure-pages@v4
     - name: upload artifact
