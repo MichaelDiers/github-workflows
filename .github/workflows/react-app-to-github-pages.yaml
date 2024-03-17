@@ -1,0 +1,61 @@
+# Info:
+# - Uses react scripts to build the react application and deploys to github pages.
+# Usage:
+# - github pages 
+#  - enable
+#  - set source to GitHub Actions
+# 
+# name: <name of the workflow>
+# on:
+#   push:
+#     paths:
+#       - <path>
+#   workflow_dispatch:
+# permissions:
+#   contents: read
+#   id-token: write
+#   pages: write
+# jobs:
+#   react-app-to-github-pages:
+#     uses: MichaelDiers/github-workflows/.github/workflows/react-app-to-github-pages.yaml@main
+#     with:
+#       build-directory: <path to build output directory relative to the working-directory>
+#       working-directory: <path to folder that contains the react app>
+#
+name: build react app and deploy to github pages
+on:
+  workflow_call:
+    inputs:
+      build-directory:
+        default: build
+        type: string
+      working-directory:
+        required: true
+        type: string
+permissions:
+  contents: read
+  id-token: write
+  pages: write
+jobs:
+  build-and-deploy:
+    env:
+      PAGES_DIRECTORY: ${{inputs.working-directory}}/${{inputs.build-directory}}
+      WORKING_DIRECTORY: ${{inputs.working-directory}}
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: install
+      run: npm install
+      working-directory: ${{env.WORKING_DIRECTORY}}
+    - name: build
+      run: npm run build
+      working-directory: ${{env.WORKING_DIRECTORY}}
+    - name: setup github pages
+      uses: actions/configure-pages@v4
+    - name: upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ${{ env.PAGES_DIRECTORY }}
+    - name: deploy to github pages
+      uses: actions/deploy-pages@v4
