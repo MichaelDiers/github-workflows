@@ -83,7 +83,7 @@ jobs:
       working-directory: ${{env.WORKING_DIRECTORY}}
     - name: set homepage
       if: ${{ env.SET_HOMEPAGE == true || env.SET_HOMEPAGE == 'true'}}
-      run: sed 's/"name":/"homepage":"${{env.HOMEPAGE}}","name":/' package.json
+      run: sed -i 's/"name":/"homepage":"${{env.HOMEPAGE}}","name":/' package.json
       working-directory: ${{env.WORKING_DIRECTORY}}
     - name: cat
       run: cat package.json
