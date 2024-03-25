@@ -18,7 +18,7 @@
 #   pages: write
 # jobs:
 #   react-app-to-github-pages:
-#     uses: MichaelDiers/github-workflows/.github/workflows/react-app-to-github-pages.yaml@main
+#     uses: MichaelDiers/github-workflows/.github/workflows/react-ci.yaml@main
 #     with:
 #       add-build-info: <if true add a simple build info to the static files, otherwise the step is skipped> (default: false)
 #       build-info-file-name: <name of the build info file> (default: build.html)
