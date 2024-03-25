@@ -24,6 +24,8 @@
 #       build-info-file-name: <name of the build info file> (default: build.html)
 #       build-directory: <path to build output directory relative to the working-directory> (default: build)
 #       deploy-to-pages: <if true deploy to github pages, otherwise the deployment is skipped> (default: false)
+#       set-homepage: <if true set the homepage json entry of the package.json to https://repo_owner.github.io/repo_name, otherwise the step is skipped> (default: false)
+#                     Does not check if the json entry already exists.
 #       use-stylelint: <if true run stylelint for scss files, otherwise the stylelint is skipped. 
 #                      Expects 'npm run stylelint' in the specified working-directory to be executable> (default: false)
 #       working-directory: <path to folder that contains the react app> (required)
@@ -44,6 +46,9 @@ on:
       deploy-to-pages:
         default: false
         type: boolean
+      set-homepage:
+        default: false
+        type: boolean
       use-stylelint:
         default: false
         type: boolean
@@ -61,8 +66,10 @@ jobs:
       BUILD_INFO_FILE: ${{inputs.working-directory}}/${{inputs.build-directory}}/static/${{inputs.build-info-file-name}}
       DEPLOY_TO_PAGES: ${{inputs.deploy-to-pages}}
       PAGES_DIRECTORY: ${{inputs.working-directory}}/${{inputs.build-directory}}
+      SET_HOMEPAGE: ${{inputs.set-homepage}}
       USE_STYLELINT: ${{inputs.use-stylelint}}
       WORKING_DIRECTORY: ${{inputs.working-directory}}
+      HOMEPAGE: https://${{github.repository_owner}}.github.io/${{github.event.repository.name}}
     runs-on: ubuntu-latest
     steps:
     - name: checkout
@@ -73,6 +80,13 @@ jobs:
     - name: stylelint
       if: ${{ env.USE_STYLELINT == true || env.USE_STYLELINT == 'true'}}
       run: npm run stylelint -- --mw 0
+      working-directory: ${{env.WORKING_DIRECTORY}}
+    - name: set homepage
+      if: ${{ env.SET_HOMEPAGE == true || env.SET_HOMEPAGE == 'true'}}
+      run: sed 's/"name":/"homepage":"${{env.HOMEPAGE}}","name":/' package.json
+      working-directory: ${{env.WORKING_DIRECTORY}}
+    - name: cat
+      run: cat package.json
       working-directory: ${{env.WORKING_DIRECTORY}}
     - name: build
       run: npm run build
