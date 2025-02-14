@@ -64,6 +64,9 @@ jobs:
       run: echo "NEW_VERSION=${{needs.extract-version.outputs.major}}.${{needs.extract-version.outputs.minor}}.${NEW_PATCH}" >> $GITHUB_ENV
     - name: new version xml
       run: echo "NEW_VERSION_XML=<Version>${NEW_VERSION}</Version>" >> $GITHUB_ENV
+    - run: echo "NEW_PATCH=${NEW_PATCH}"
+    - run: echo "NEW_VERSION=${NEW_VERSION}"
+    - run: echo "NEW_VERSION_XML=${NEW_VERSION_XML}"
     - name: patch nuget version
       run: sed -i "s|${{needs.extract-version.outputs.version-xml}}|${NEW_VERSION_XML}|g" ${{env.CSPROJ}}
     - name: Setup .NET
