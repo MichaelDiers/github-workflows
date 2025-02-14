@@ -1,0 +1,37 @@
+# Usage:
+# 
+# name: <name of the workflow>
+# on:
+#   push:
+#     paths:
+#       - <path>
+#   workflow_dispatch:
+# jobs:
+#   build-and-test:
+#     uses: MichaelDiers/github-workflows/.github/workflows/dotnet-build-and-test.yaml@main
+#     with:
+#       solution-directory: <path to the folder that contains the solution file>
+#
+name: build and test dotnet solution
+on:
+  workflow_call:
+    inputs:
+      solution-directory:
+        required: true
+        type: string
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+    - name: build
+      run: dotnet build /p:EnableWindowsTargeting=true --configuration Release 
+      working-directory: ${{inputs.solution-directory}}
+    - name: test
+      run: dotnet test --configuration Release --no-build
+      working-directory: ${{inputs.solution-directory}}
