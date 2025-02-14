@@ -90,8 +90,9 @@ jobs:
       run: dotnet pack --configuration Release --no-build --output .
       working-directory: ${{inputs.solution-directory}}
     - name: push nuget
-      run: dotnet nuget push ${{inputs.project-name}}.${{NEW_VERSION}}.nupkg --source ${{env.PUSH_SOURCE}} --api-key ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push ${{inputs.project-name}}.${NEW_VERSION}.nupkg --source ${{env.PUSH_SOURCE}} --api-key ${{ secrets.GITHUB_TOKEN }}
       working-directory: ${{inputs.solution-directory}}
+      shell: bash
     - name: commit version patch
       run: |
         git config --global user.name '${{ github.actor }}'
