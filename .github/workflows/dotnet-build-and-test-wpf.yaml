@@ -32,6 +32,10 @@ jobs:
     - name: build
       run: dotnet build /p:EnableWindowsTargeting=true --configuration Release 
       working-directory: ${{inputs.solution-directory}}
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
     - name: test
       run: dotnet test --configuration Release --no-build
       working-directory: ${{inputs.solution-directory}}
