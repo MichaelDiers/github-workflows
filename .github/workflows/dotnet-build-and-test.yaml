@@ -19,16 +19,22 @@ on:
       solution-directory:
         required: true
         type: string
+      runs-on:
+        default: ubuntu-latest
+        type: string
+      dotnet-version:
+        default: 9.0.x
+        type: string
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ${{inputs.runs-on}}
     steps:
     - name: checkout
       uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 9.0.x
+        dotnet-version: ${{inputs.dotnet-version}}
     - name: build
       run: dotnet build --configuration Release 
       working-directory: ${{inputs.solution-directory}}
