@@ -64,6 +64,8 @@ jobs:
       run: echo "NEW_VERSION=${{needs.extract-version.outputs.major}}.${{needs.extract-version.outputs.minor}}.${NEW_PATCH}" >> $GITHUB_ENV
     - name: new version xml
       run: echo "NEW_VERSION_XML=<Version>${NEW_VERSION}</Version>" >> $GITHUB_ENV
+    - run: echo "${{needs.extract-version.outputs.version-xml}}"
+    - run: echo "${{needs.extract-version.outputs.version}}"
     - run: echo "NEW_PATCH=${NEW_PATCH}"
     - run: echo "NEW_VERSION=${NEW_VERSION}"
     - run: echo "NEW_VERSION_XML=${NEW_VERSION_XML}"
