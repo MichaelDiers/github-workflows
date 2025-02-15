@@ -67,12 +67,6 @@ jobs:
     - name: new version xml
       run: echo "NEW_VERSION_XML=<Version>${NEW_VERSION}</Version>" >> $GITHUB_ENV
       shell: bash
-    - run: echo "${{needs.extract-version.outputs.version-xml}}"
-    - run: echo "${{needs.extract-version.outputs.version}}"
-    - run: echo "${{needs.extract-version.outputs.patch}}"
-    - run: echo "NEW_PATCH=${NEW_PATCH}"
-    - run: echo "NEW_VERSION=${NEW_VERSION}"
-    - run: echo "NEW_VERSION_XML=${NEW_VERSION_XML}"
     - name: patch nuget version
       run: sed -i "s|${{needs.extract-version.outputs.version-xml}}|${NEW_VERSION_XML}|g" ${{env.CSPROJ}}
       shell: bash
