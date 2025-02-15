@@ -79,7 +79,7 @@ jobs:
       run: dotnet build --configuration Release 
       working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: test
-      run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="./${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
+      run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="../${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
       working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@5.4.4
