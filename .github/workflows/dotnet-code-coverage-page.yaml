@@ -55,6 +55,7 @@ permissions:
   contents: read
   id-token: write
   pages: write
+  packages: read
 jobs:
   coverage:
     runs-on: ${{inputs.runs-on}}
@@ -73,6 +74,8 @@ jobs:
       with:
         dotnet-version: ${{inputs.dotnet-version}}
         dotnet-quality: 'ga'
+    - name: add github nugets
+      run: dotnet nuget add source --username MichaelDiers --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/MichaelDiers/index.json"
     - name: add altcover
       run: dotnet add ${{env.TEST_CSPROJ}} package altcover
     - name: build
