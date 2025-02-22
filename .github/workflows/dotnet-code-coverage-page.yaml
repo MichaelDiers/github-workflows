@@ -45,6 +45,9 @@ on:
       assembly-filters:
         default: -*.Tests;-AltCover.Monitor;-*.Test;-Microsoft.*;-testhost
         type: string
+      filefilters:
+        default: +*
+        type: string
       runs-on:
         default: ubuntu-latest
         type: string
@@ -65,6 +68,7 @@ jobs:
       TEST_CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
       REPORT_TARGET: doc/coverage
       ASSEMBLY_FILTERS: ${{inputs.assembly-filters}}
+      FILE_FILTERS: ${{inputs.filefilters}}
       REPORT_TITLE: ${{inputs.project-name}} ${{inputs.project-version}} Code Coverage
     steps:
     - name: checkout
@@ -91,6 +95,7 @@ jobs:
         targetdir: ${{ env.REPORT_TARGET }}
         reporttypes: Html_Dark
         assemblyfilters: ${{ env.ASSEMBLY_FILTERS }}
+        filefilters: ${{ env.FILE_FILTERS }}
         title: ${{env.REPORT_TITLE}}
     - name: Setup Pages
       uses: actions/configure-pages@v4
