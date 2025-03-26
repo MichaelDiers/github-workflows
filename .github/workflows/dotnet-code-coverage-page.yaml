@@ -63,10 +63,10 @@ jobs:
   coverage:
     runs-on: ${{inputs.runs-on}}
     env:
-      ALTCOVER_XML: doc/coverage/${{inputs.test-project-name}}-altcover.xml
+      ALTCOVER_XML: ${{GITHUB_WORKSPACE}}/gh_page/doc/coverage/${{inputs.test-project-name}}-altcover.xml
       SOLUTION_DIRECTORY: ${{inputs.solution-directory}}
       TEST_CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
-      REPORT_TARGET: doc/coverage
+      REPORT_TARGET: ${{GITHUB_WORKSPACE}}/gh_page/doc/coverage
       ASSEMBLY_FILTERS: ${{inputs.assembly-filters}}
       FILE_FILTERS: ${{inputs.filefilters}}
       REPORT_TITLE: ${{inputs.project-name}} ${{inputs.project-version}} Code Coverage
@@ -86,18 +86,17 @@ jobs:
       run: dotnet build --configuration Release 
       working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: test
-      run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="../${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
+      run: dotnet test --configuration Release /p:AltCover=true --no-build --no-restore /p:AltCoverReport="${{ env.ALTCOVER_XML }}" /p:AltCoverAssemblyFilter=xunit.*
       working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: ReportGenerator
       uses: danielpalme/ReportGenerator-GitHub-Action@5.4.4
       with:
-        reports: ../${{ env.ALTCOVER_XML }}
+        reports: ${{ env.ALTCOVER_XML }}
         targetdir: ${{ env.REPORT_TARGET }}
         reporttypes: Html_Dark
         assemblyfilters: ${{ env.ASSEMBLY_FILTERS }}
         filefilters: ${{ env.FILE_FILTERS }}
         title: ${{env.REPORT_TITLE}}
-        working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: Setup Pages
       uses: actions/configure-pages@v4
     - name: Upload artifact
