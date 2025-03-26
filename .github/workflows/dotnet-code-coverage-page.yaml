@@ -63,10 +63,10 @@ jobs:
   coverage:
     runs-on: ${{inputs.runs-on}}
     env:
-      ALTCOVER_XML: ${{GITHUB_WORKSPACE}}/gh_page/doc/coverage/${{inputs.test-project-name}}-altcover.xml
+      ALTCOVER_XML: ${{github.workspace}}/gh_page/doc/coverage/${{inputs.test-project-name}}-altcover.xml
       SOLUTION_DIRECTORY: ${{inputs.solution-directory}}
       TEST_CSPROJ: ${{inputs.solution-directory}}/${{inputs.test-project-name}}/${{inputs.test-project-name}}.csproj
-      REPORT_TARGET: ${{GITHUB_WORKSPACE}}/gh_page/doc/coverage
+      REPORT_TARGET: ${{github.workspace}}/gh_page/doc/coverage
       ASSEMBLY_FILTERS: ${{inputs.assembly-filters}}
       FILE_FILTERS: ${{inputs.filefilters}}
       REPORT_TITLE: ${{inputs.project-name}} ${{inputs.project-version}} Code Coverage
