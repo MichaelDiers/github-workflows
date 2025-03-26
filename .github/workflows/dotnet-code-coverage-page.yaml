@@ -97,6 +97,7 @@ jobs:
         assemblyfilters: ${{ env.ASSEMBLY_FILTERS }}
         filefilters: ${{ env.FILE_FILTERS }}
         title: ${{env.REPORT_TITLE}}
+        working-directory: ${{env.SOLUTION_DIRECTORY}}
     - name: Setup Pages
       uses: actions/configure-pages@v4
     - name: Upload artifact
